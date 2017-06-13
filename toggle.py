@@ -35,8 +35,6 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(relay_control_channel, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(flow_sensor_channel, GPIO.IN)
 
-tokens = 2
-
 delay = 3 
 run = True
 
