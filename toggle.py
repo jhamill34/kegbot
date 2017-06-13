@@ -97,7 +97,7 @@ def flow_routine():
 
 	while keep_open:
 		currentTime = int(time.time() * 1000)
-		if GPIO.input(7):
+		if GPIO.input(flow_sensor_channel):
 			pinState = True
 		else:
 			pinState = False
