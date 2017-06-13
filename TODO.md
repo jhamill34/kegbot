@@ -6,4 +6,3 @@
 * Add button to the token process (1 GPIO) 
 	* wait for button to unlock and solonoid and remove tokens
 	* This allows us to add more taps to the single keg
-* Display keg level on front screen
