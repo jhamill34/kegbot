@@ -6,6 +6,8 @@ import MFRC522
 import time
 import signal
 import sys
+import glob
+import os
 
 users = {
 	'64,84,139,25': {
@@ -31,11 +33,18 @@ continue_reading = True
 relay_control_channel = 8
 flow_sensor_channel = 7
 
+os.system('modprobe w1-gpio')
+os.system('modprobe w1-therm')
+
+base_idr = '/sys/bus/w1/devices'
+device_folder = glob.glob(base_dir + '28*')[0]
+device_file = device_folder + '/w1_slave'
+
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(relay_control_channel, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(flow_sensor_channel, GPIO.IN)
 
-delay = 3 
+delay = 3
 run = True
 
 # Create an object of the class MFRC522
@@ -49,14 +58,32 @@ def signal_handler(signal, frame):
 	global continue_reading
 	print "Cleaning up GPIO pins"
 	continue_reading = False
-	GPIO.cleanup()	
-	
+	GPIO.cleanup()
+
 signal.signal(signal.SIGINT, signal_handler)
+
+def read_temp_raw():
+	f = open(defice_file, 'r')
+	lines = f.readlines()
+	f.close()
+	return lines
+
+def read_temp():
+    lines = read_temp_raw()
+    while lines[0].strip()[-3:] != 'YES':
+        time.sleep(0.2)
+        lines = read_temp_raw()
+    equals_pos = lines[1].find('t=')
+    if equals_pos != -1:
+        temp_string = lines[1][equals_pos+2:]
+        temp_c = float(temp_string) / 1000.0
+        temp_f = temp_c * 9.0 / 5.0 + 32.0
+        return temp_c, temp_f
 
 def flow_routine():
 	lastPinState = False
 	pouring = False
-	pinState = 0 
+	pinState = 0
 	lastPinChange = int(time.time() * 1000)
 	pourStart = 0
 	pinChange = lastPinChange
@@ -74,7 +101,7 @@ def flow_routine():
 			pinState = True
 		else:
 			pinState = False
-	
+
 		if(pinState != lastPinState and pinState == True):
 			if(pouring == False):
 				pourStart = currentTime
@@ -86,7 +113,7 @@ def flow_routine():
 				flow = hertz / (60 * 7.5)
 				litersPoured += flow * (pinDelta / 1000.0000)
 				pintsPoured = litersPoured * 2.11338
-	
+
 		if(pouring == True and pinState == lastPinState and pintsPoured > 1.0):
 			keep_open = False
 			pouring = False
@@ -95,36 +122,40 @@ def flow_routine():
 				print 'Someone just poured ' + str(pintsPoured) + ' pints of beer'
 				litersPoured = 0
 				pintsPoured = 0
-	
+
 		lastPinChange = pinChange
 		lastPinState = pinState
 
 while continue_reading:
-  # Scan for cards    
+  temp_c, temp_f = read_temp()
+  lcd.cursor_pos = (1, 0)
+  lcd.write_string('Temp: '+ str(temp_f) + ' F')
+
+  # Scan for cards
   (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
 
   # If a card is found
   if status == MIFAREReader.MI_OK:
     print "Card detected"
-  
+
   # Get the UID of the card
   (status,uid) = MIFAREReader.MFRC522_Anticoll()
 
   # If we have the UID, continue
   if status == MIFAREReader.MI_OK:
     # Print UID
-    uid_string = str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3]) 
+    uid_string = str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
     user = users[uid_string]
     if user['tokens'] > 0:
-      users[uid_string]['tokens'] -= 1 
+      users[uid_string]['tokens'] -= 1
       lcd.clear()
       lcd.write_string('Welcome '+ user['name'] + '!')
       lcd.crlf()
       lcd.write_string('Tokens Left: ' + str(users[uid_string]['tokens']))
       lcd.crlf()
       lcd.write_string('Start pouring...')
-      GPIO.output(relay_control_channel, GPIO.LOW)	
-      flow_routine() 
+      GPIO.output(relay_control_channel, GPIO.LOW)
+      flow_routine()
       GPIO.output(relay_control_channel, GPIO.HIGH)
       lcd.clear()
       lcd.write_string('Enjoy! :)')
