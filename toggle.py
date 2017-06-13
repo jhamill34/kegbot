@@ -31,12 +31,12 @@ users = {
 continue_reading = True
 
 relay_control_channel = 8
-flow_sensor_channel = 7
+flow_sensor_channel = 5
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
-base_idr = '/sys/bus/w1/devices'
+base_dir = '/sys/bus/w1/devices/'
 device_folder = glob.glob(base_dir + '28*')[0]
 device_file = device_folder + '/w1_slave'
 
@@ -63,7 +63,7 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 def read_temp_raw():
-	f = open(defice_file, 'r')
+	f = open(device_file, 'r')
 	lines = f.readlines()
 	f.close()
 	return lines
@@ -129,7 +129,7 @@ def flow_routine():
 while continue_reading:
   temp_c, temp_f = read_temp()
   lcd.cursor_pos = (1, 0)
-  lcd.write_string('Temp: '+ str(temp_f) + ' F')
+  lcd.write_string('Temp: '+ "{0:.2f}".format(temp_f) + ' F')
 
   # Scan for cards
   (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
