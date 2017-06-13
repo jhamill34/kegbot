@@ -9,6 +9,9 @@ import sys
 import glob
 import os
 
+startKeglevel = 40.0
+keglevel = 40.0
+
 users = {
 	'64,84,139,25': {
 		'name': 'Josh',
@@ -114,11 +117,12 @@ def flow_routine():
 				litersPoured += flow * (pinDelta / 1000.0000)
 				pintsPoured = litersPoured * 2.11338
 
-		if(pouring == True and pinState == lastPinState and pintsPoured > 1.0):
+		if(pouring == True and pinState == lastPinState and (pintsPoured > 1.0 or (currentTime - lastPinChange) > 3000)):
 			keep_open = False
 			pouring = False
 			if(pintsPoured > 0.1):
-				pourTime = int((currentTime - pourStart)/1000) - 3
+				global keglevel
+				keglevel -= pintsPoured
 				print 'Someone just poured ' + str(pintsPoured) + ' pints of beer'
 				litersPoured = 0
 				pintsPoured = 0
@@ -130,6 +134,10 @@ while continue_reading:
   temp_c, temp_f = read_temp()
   lcd.cursor_pos = (1, 0)
   lcd.write_string('Temp: '+ "{0:.2f}".format(temp_f) + ' F')
+  lcd.cursor_pos = (2, 0)
+  lcd.write_string("{0:.2f}".format(keglevel) + ' pints left')
+  lcd.cursor_pos = (3, 0)
+  lcd.write_string(int(round(keglevel / startKeglevel * 20)) * "=")
 
   # Scan for cards
   (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
