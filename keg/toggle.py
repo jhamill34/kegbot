@@ -135,7 +135,7 @@ def flow_routine():
 while continue_reading:
   temp_c, temp_f = read_temp()
   lcd.cursor_pos = (1, 0)
-  lcd.write_string('Temp: '+ "{0:.2f}".format(temp_f) + ' F')
+  lcd.write_string('Temp: '+ "{0:.2f}".format(temp_f) + ' F        ')
   lcd.cursor_pos = (2, 0)
   lcd.write_string("{0:.2f}".format(keglevel) + ' pints left')
   lcd.cursor_pos = (3, 0)
