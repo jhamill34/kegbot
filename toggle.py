@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from RPLCD.common import CursorMode
 from RPLCD.gpio import CharLCD
 import RPi.GPIO as GPIO
 import MFRC522
@@ -54,6 +55,7 @@ run = True
 MIFAREReader = MFRC522.MFRC522()
 
 lcd = CharLCD(pin_rs=40,pin_e=38,pins_data=[36,37,35,33],numbering_mode=GPIO.BOARD,cols=20,rows=4,dotsize=8,charmap='A02',auto_linebreaks=True)
+lcd.cursor_mode = CursorMode.hide
 
 lcd.write_string('Please Scan Card...')
 
