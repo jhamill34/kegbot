@@ -1,7 +1,6 @@
-FROM postgres:9
-MAINTAINER Joshua Rasmussen <xlr8runner@gmail.com>
+FROM resin/rpi-raspbian:latest
 
-COPY ./migrations/ /docer-entrypoint-initdb.d/
+ENTRYPOINT []
 
 ENV POSTGRES_USER=docker
 ENV POSTGRES_PASSWORD=mysecretpassword
