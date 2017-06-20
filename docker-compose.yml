@@ -1,0 +1,19 @@
+version: '3'
+services:
+  web:
+    build: ./web
+    image: kegbot-api
+    command: sh cache-modules.sh
+    ports:
+    - "3000:3000"
+    volumes:
+    - ./web:/app
+    links:
+    - db
+  db:
+    build: ./db
+    image: kegbot-db
+    ports:
+    - "5555:5432"
+    volumes:
+    - ./db/data:/var/lib/postgresql/data

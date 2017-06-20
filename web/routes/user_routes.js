@@ -3,7 +3,7 @@
 const AbstractController = require('./abstract_router')
 
 class UserController extends AbstractController{
-  constructor (knex) {
+  constructor (table, knex) {
     super()
     this.knex = knex
   }

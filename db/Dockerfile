@@ -1,7 +1,6 @@
-FROM rotschopf/rpi-postgres
+# FROM rotschopf/rpi-postgres
+FROM postgres:9
 MAINTAINER Joshua Rasmussen <xlr8runner@gmail.com>
-
-COPY ./migrations/ /docker-entrypoint-initdb.d/
 
 ENV POSTGRES_USER=docker
 ENV POSTGRES_PASSWORD=mysecretpassword

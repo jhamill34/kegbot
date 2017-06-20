@@ -4,7 +4,7 @@ module.exports = {
   development: {
     client: 'postgresql',
     connection: {
-      host: '172.20.0.2',
+      host: 'db',
       database: 'kegbot',
       user:     'docker',
       password: 'mysecretpassword'
