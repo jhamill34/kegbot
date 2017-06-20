@@ -27,14 +27,14 @@ users = {
 		'tokens': 2
 	},
 	'149,6,90,190': {
-		'name': 'Brittany',
+		'name': 'Kylie',
 		'tokens': 2
 	}
 }
 
 continue_reading = True
 
-relay_control_channel = 8
+relay_control_channel = 31 
 flow_sensor_channel = 5
 
 os.system('modprobe w1-gpio')
@@ -43,6 +43,8 @@ os.system('modprobe w1-therm')
 base_dir = '/sys/bus/w1/devices/'
 device_folder = glob.glob(base_dir + '28*')[0]
 device_file = device_folder + '/w1_slave'
+
+GPIO.cleanup()
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(relay_control_channel, GPIO.OUT, initial=GPIO.HIGH)
@@ -54,7 +56,7 @@ run = True
 # Create an object of the class MFRC522
 MIFAREReader = MFRC522.MFRC522()
 
-lcd = CharLCD(pin_rs=40,pin_e=38,pins_data=[36,37,35,33],numbering_mode=GPIO.BOARD,cols=20,rows=4,dotsize=8,charmap='A02',auto_linebreaks=True)
+lcd = CharLCD(pin_rs=32,pin_e=33,pins_data=[36,35,38,40],numbering_mode=GPIO.BOARD,cols=20,rows=4,dotsize=8,charmap='A02',auto_linebreaks=True)
 lcd.cursor_mode = CursorMode.hide
 
 lcd.write_string('Please Scan Card...')
@@ -134,6 +136,7 @@ def flow_routine():
 
 while continue_reading:
   temp_c, temp_f = read_temp()
+  
   lcd.cursor_pos = (1, 0)
   lcd.write_string('Temp: '+ "{0:.2f}".format(temp_f) + ' F        ')
   lcd.cursor_pos = (2, 0)

@@ -6,7 +6,7 @@ import sys
 continue_running = True
 
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup(7, GPIO.IN)
+GPIO.setup(5, GPIO.IN)
 
 def signal_handler(signal, frame):
 	global continue_reading
@@ -31,7 +31,7 @@ pintsPoured = 0
 
 while continue_running:
 	currentTime = int(time.time() * 1000)
-	if GPIO.input(7):
+	if GPIO.input(5):
 		pinState = True
 	else:
 		pinState = False
