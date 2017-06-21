@@ -3,9 +3,9 @@ services:
   web:
     build: ./web
     image: kegbot-api
-    command: sh cache-modules.sh
     ports:
     - "3000:3000"
+    command: ["./wait-for-it.sh", "db:5432", "-t", "0", "--", "python", "app.py"]
     volumes:
     - ./web:/app
     links:
