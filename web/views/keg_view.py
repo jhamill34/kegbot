@@ -1,5 +1,5 @@
 import datetime
-rom flask import jsonify, request
+from flask import jsonify, request
 from flask.views import MethodView, View
 from session import session
 from models import Keg, Beer, Kegerator
