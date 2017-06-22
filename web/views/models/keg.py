@@ -9,6 +9,7 @@ class Keg(Base):
     id = Column(Integer, primary_key=True)
     pints = Column(Numeric)
     starting_pints = Column(Numeric)
+    kegerator_ordinal = Column(Integer)
     beer_id = Column(Integer, ForeignKey('beer.id'))
     kegerator_id = Column(Integer, ForeignKey('kegerator.id'))
     created_at = Column(DateTime, default=datetime.datetime.utcnow())
@@ -22,6 +23,7 @@ class Keg(Base):
             'id': self.id,
             'pints': str(self.pints),
             'starting_pints': str(self.starting_pints),
+            'kegerator_ordinal': self.kegerator_ordinal,
             'beer_id': self.beer_id,
             'kegerator_id': self.kegerator_id,
             'created_at': self.created_at,

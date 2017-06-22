@@ -10,6 +10,8 @@ import sys
 import glob
 import os
 
+kegerator_id = os.environ.get('KEG_ID')
+
 startKeglevel = 40.0
 keglevel = 40.0
 
@@ -34,7 +36,7 @@ users = {
 
 continue_reading = True
 
-relay_control_channel = 31 
+relay_control_channel = 31
 flow_sensor_channel = 5
 
 os.system('modprobe w1-gpio')
@@ -136,7 +138,7 @@ def flow_routine():
 
 while continue_reading:
   temp_c, temp_f = read_temp()
-  
+
   lcd.cursor_pos = (1, 0)
   lcd.write_string('Temp: '+ "{0:.2f}".format(temp_f) + ' F        ')
   lcd.cursor_pos = (2, 0)
