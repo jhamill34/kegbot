@@ -7,6 +7,7 @@ class Kegerator(Base):
     __tablename__ = 'kegerator'
     id = Column(Integer, primary_key=True)
     max_kegs = Column(Integer)
+    secret = Column(String)
     created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime, default=datetime.datetime.utcnow())
 

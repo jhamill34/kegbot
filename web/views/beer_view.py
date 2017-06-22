@@ -5,6 +5,7 @@ from session import session
 from models import Beer
 
 class BeerView(MethodView):
+    # Public
     def get(self, beer_id):
         if beer_id is None:
             result = []
@@ -19,6 +20,7 @@ class BeerView(MethodView):
             else:
                 return ('Beer Not Found', 404)
 
+    # Admin
     def post(self):
         beer_json = request.get_json()
 
@@ -27,10 +29,11 @@ class BeerView(MethodView):
             session.add(beer)
             session.commit()
 
-            return jsonify(beer.to_json())
+            return (jsonify(beer.to_json()), 201)
         except Exception as e:
             return ('Missing Parameters', 400)
 
+    # Admin
     def put(self, beer_id):
         beer_json = request.get_json()
         beer = session.query(Beer).filter(Beer.id == beer_id).first()
@@ -50,6 +53,7 @@ class BeerView(MethodView):
         else:
             return ('Beer Not Found', 404)
 
+    # Admin
     def delete(self, beer_id):
         beer = session.query(Beer).filter(Beer.id == beer_id).first()
 
@@ -61,6 +65,7 @@ class BeerView(MethodView):
         else:
             return ('Beer Not Found', 404)
 
+# Public
 class ShowBeerKegs(View):
     def dispatch_request(self, beer_id):
         beer = session.query(Beer).filter(Beer.id == beer_id).first()

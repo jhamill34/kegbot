@@ -4,6 +4,7 @@ from session import session
 from models import Kegerator
 
 class KegeratorView(MethodView):
+    # Public and Kegerator
     def get(self, kegerator_id):
         if kegerator_id is None:
             result = []
@@ -17,6 +18,7 @@ class KegeratorView(MethodView):
             else:
                 return ('Kegerator Not Found', 404)
 
+    # Admin
     def post(self):
         kegerator_json = request.get_json()
         try:
@@ -24,10 +26,11 @@ class KegeratorView(MethodView):
             session.add(kegerator)
             session.commit()
 
-            return jsonify(kegerator.to_json())
+            return (jsonify(kegerator.to_json()), 201)
         except Exception as e:
             return ('Missing Parameters', 400)
 
+    # Admin
     def put(self, kegerator_id):
         kegerator_json = request.get_json()
         kegerator = session.query(Kegerator).filter(Kegerator.id == kegerator_id).first()
@@ -40,6 +43,7 @@ class KegeratorView(MethodView):
         else:
             return ('Kegerator Not Found', 404)
 
+    # Admin
     def delete(self, kegerator_id):
         kegerator = session.query(Kegerator).filter(Kegerator.id == kegerator_id).first()
 
@@ -51,6 +55,7 @@ class KegeratorView(MethodView):
         else:
             return ('Kegerator Not Found', 404)
 
+# Public and Kegerator
 class ShowKegeratorKegs(View):
     def dispatch_request(self, kegerator_id):
         kegerator = session.query(Kegerator).filter(Kegerator.id == kegerator_id).first()

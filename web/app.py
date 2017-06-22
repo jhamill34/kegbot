@@ -6,10 +6,11 @@ app = Flask(__name__)
 
 util = WebUtils(app)
 
-util.register_api(UserView, 'user_api', '/users', pk='user_id')
+util.register_api(CardView, 'card_api', '/cards', pk='card_id')
 util.register_api(KegeratorView, 'kegerator_api', '/kegerators', pk='kegerator_id')
 util.register_api(BeerView, 'beer_api', '/beers', pk='beer_id')
 util.register_api(KegView, 'keg_api', '/kegs', pk='keg_id')
+util.register_api(KegView, 'account_api', '/accounts', pk='account_id')
 
 app.add_url_rule('/beers/<int:beer_id>/kegs', view_func=ShowBeerKegs.as_view('show_beer_kegs'))
 app.add_url_rule('/kegerators/<int:kegerator_id>/kegs', view_func=ShowKegeratorKegs.as_view('show_kegerator_kegs'))

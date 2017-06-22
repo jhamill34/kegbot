@@ -5,6 +5,7 @@ from session import session
 from models import Keg, Beer, Kegerator
 
 class KegView(MethodView):
+    # Public
     def get(self, keg_id):
         if keg_id is None:
             result = []
@@ -15,6 +16,7 @@ class KegView(MethodView):
             keg = session.query(Keg).filter(Keg.id == keg_id).first()
             return jsonify(keg.to_json())
 
+    # Admin
     def post(self):
         keg_json = request.get_json()
 
@@ -28,12 +30,13 @@ class KegView(MethodView):
             if keg.beer and keg.kegerator:
                 session.add(keg)
                 session.commit()
-                return jsonify(keg.to_json())
+                return (jsonify(keg.to_json()), 201)
             else:
                 return ('Beer or Kegerator not found', 400)
         except Exception as e:
             return ('Missing Parameters', 400)
 
+    # Kegerator Who Owns it, or Admin
     def put(self, keg_id):
         keg_json = request.get_json()
         keg = session.query(Keg).filter(Keg.id == keg_id).first()
@@ -53,6 +56,7 @@ class KegView(MethodView):
         else:
             return ('Keg Not Found', 404)
 
+    # Admin
     def delete(self, keg_id):
         keg = session.query(Keg).filter(Keg.id == keg_id).first()
 
@@ -64,7 +68,7 @@ class KegView(MethodView):
         else:
             return ('Keg Not Found', 404)
 
-
+# Public
 class ShowKegBeer(View):
     def dispatch_request(self, keg_id):
         keg = session.query(Keg).filter(Keg.id == keg_id).first()
@@ -74,6 +78,7 @@ class ShowKegBeer(View):
         else:
             return ('Keg Not Found', 404)
 
+# Public
 class ShowKegKegerator(View):
     def dispatch_request(self, keg_id):
         keg = session.query(Keg).filter(Keg.id == keg_id).first()
