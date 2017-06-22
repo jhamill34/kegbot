@@ -1,7 +1,7 @@
 from flask import jsonify, request
-from flask.views import MethodView
+from flask.views import MethodView, View
 from session import session
-from models import Keg
+from models import Keg, Beer, Kegerator
 
 class KegView(MethodView):
     def get(self, keg_id):
@@ -58,20 +58,20 @@ class KegView(MethodView):
             return ('Keg Not Found', 404)
 
 
-# @app.route('/keg/<int:keg_id>/beer')
-# def show_keg_beer(keg_id):
-#     keg = session.query(Keg).filter(Keg.id == keg_id).first()
-#
-#     if keg:
-#         return jsonify(keg.beer.to_json())
-#     else:
-#         return ('Keg Not Found', 404)
-#
-# @app.route('/keg/<int:keg_id>/kegerator')
-# def show_keg_kegerator(keg_id):
-#     keg = session.query(Keg).filter(Keg.id == keg_id).first()
-#
-#     if keg:
-#         return jsonify(keg.kegerator.to_json())
-#     else:
-#         return ('Keg Not Found', 404)
+class ShowKegBeer(View):
+    def dispatch_request(self, keg_id):
+        keg = session.query(Keg).filter(Keg.id == keg_id).first()
+
+        if keg:
+            return jsonify(keg.beer.to_json())
+        else:
+            return ('Keg Not Found', 404)
+
+class ShowKegKegerator(View):
+    def dispatch_request(self, keg_id):
+        keg = session.query(Keg).filter(Keg.id == keg_id).first()
+
+        if keg:
+            return jsonify(keg.kegerator.to_json())
+        else:
+            return ('Keg Not Found', 404)

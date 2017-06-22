@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from flask.views import MethodView
+from flask.views import MethodView, View
 from session import session
 from models import Beer
 
@@ -58,13 +58,13 @@ class BeerView(MethodView):
         else:
             return ('Beer Not Found', 404)
 
-# @app.route('/beer/<int:beer_id>/kegs')
-# def show_beer_kegs(beer_id):
-#     beer = session.query(Beer).filter(Beer.id == beer_id).first()
-#     if beer:
-#         result = []
-#         for instance in beer.kegs:
-#             result.append(instance.to_json())
-#         return jsonify(result)
-#     else:
-#         return ('Beer Not Found', 404)
+class ShowBeerKegs(View):
+    def dispatch_request(self, beer_id):
+        beer = session.query(Beer).filter(Beer.id == beer_id).first()
+        if beer:
+            result = []
+            for instance in beer.kegs:
+                result.append(instance.to_json())
+            return jsonify(result)
+        else:
+            return ('Beer Not Found', 404)

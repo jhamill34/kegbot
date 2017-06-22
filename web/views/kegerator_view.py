@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from flask.views import MethodView
+from flask.views import MethodView, View
 from session import session
 from models import Kegerator
 
@@ -48,14 +48,14 @@ class KegeratorView(MethodView):
         else:
             return ('Kegerator Not Found', 404)
 
-# @app.route('/kegerator/<int:kegerator_id>/kegs')
-# def show_kegerator_kegs(kegerator_id):
-#     kegerator = session.query(Kegerator).filter(Kegerator.id == kegerator_id).first()
-#
-#     if kegerator:
-#         result = []
-#         for instance in kegerator.kegs:
-#             result.append(instance.to_json())
-#         return jsonify(result)
-#     else:
-#         return ('Kegerator Not Found', 404)
+class ShowKegeratorKegs(View):
+    def dispatch_request(self, kegerator_id):
+        kegerator = session.query(Kegerator).filter(Kegerator.id == kegerator_id).first()
+
+        if kegerator:
+            result = []
+            for instance in kegerator.kegs:
+                result.append(instance.to_json())
+            return jsonify(result)
+        else:
+            return ('Kegerator Not Found', 404)

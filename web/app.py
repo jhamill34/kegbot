@@ -1,18 +1,20 @@
 from flask import Flask
-from views import BeerView, KegView, KegeratorView, UserView
+from views import *
+from utils import WebUtils
 
 app = Flask(__name__)
 
-def register_api(view, endpoint, url, pk='id', pk_type='int'):
-    view_func = view.as_view(endpoint)
-    app.add_url_rule(url, defaults={pk: None}, view_func=view_func, methods=['GET',])
-    app.add_url_rule(url, view_func=view_func, methods=['POST',])
-    app.add_url_rule('%s/<%s:%s>' % (url, pk_type, pk), view_func=view_func, methods=['GET', 'PUT', 'DELETE'])
+util = WebUtils(app)
 
-register_api(UserView, 'user_api', '/users', pk='user_id')
-register_api(KegeratorView, 'kegerator_api', '/kegerators', pk='kegerator_id')
-register_api(BeerView, 'beer_api', '/beers', pk='beer_id')
-register_api(KegView, 'keg_api', '/kegs', pk='keg_id')
+util.register_api(UserView, 'user_api', '/users', pk='user_id')
+util.register_api(KegeratorView, 'kegerator_api', '/kegerators', pk='kegerator_id')
+util.register_api(BeerView, 'beer_api', '/beers', pk='beer_id')
+util.register_api(KegView, 'keg_api', '/kegs', pk='keg_id')
+
+app.add_url_rule('/beers/<int:beer_id>/kegs', view_func=ShowBeerKegs.as_view('show_beer_kegs'))
+app.add_url_rule('/kegerators/<int:kegerator_id>/kegs', view_func=ShowKegeratorKegs.as_view('show_kegerator_kegs'))
+app.add_url_rule('/kegs/<int:keg_id>/beer', view_func=ShowKegBeer.as_view('show_keg_beer'))
+app.add_url_rule('/kegs/<int:keg_id>/kegerator', view_func=ShowKegKegerator.as_view('show_keg_kegerator'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)
