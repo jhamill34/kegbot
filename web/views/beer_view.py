@@ -1,3 +1,4 @@
+import datetime
 from flask import jsonify, request
 from flask.views import MethodView, View
 from session import session
@@ -40,6 +41,8 @@ class BeerView(MethodView):
 
             if 'description' in beer_json:
                 beer.description = beer_json['description']
+
+            beer.updated_at = datetime.datetime.utcnow()
 
             session.commit()
 

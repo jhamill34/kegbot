@@ -1,3 +1,4 @@
+import datetime
 from flask import jsonify, request
 from flask.views import MethodView
 from session import session
@@ -67,6 +68,8 @@ class UserView(MethodView):
 
             if 'tokens' in usr_json:
                 usr.tokens = usr_json['tokens']
+
+            usr.updated_at = datetime.datetime.utcnow()
 
             session.commit()
 

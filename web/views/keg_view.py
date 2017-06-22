@@ -1,4 +1,5 @@
-from flask import jsonify, request
+import datetime
+rom flask import jsonify, request
 from flask.views import MethodView, View
 from session import session
 from models import Keg, Beer, Kegerator
@@ -18,8 +19,9 @@ class KegView(MethodView):
         keg_json = request.get_json()
 
         try:
-            keg = Keg(pints=keg_json['pints'], starting_pints=keg_json['starting_pints'])
+            keg = Keg(pints=keg_json['pints'], starting_pints=keg_json['starting_pints'], kegerator_ordinal=keg_json['kegerator_ordinal'])
 
+            # TODO: Check for if the count will pass the kegerator max_count value and fail if so
             keg.kegerator = session.query(Kegerator).filter(Kegerator.id == int(keg_json['kegerator_id'])).first()
             keg.beer = session.query(Beer).filter(Beer.id == int(keg_json['beer_id'])).first()
 
@@ -39,6 +41,11 @@ class KegView(MethodView):
         if keg:
             if 'pints' in keg_json:
                 keg.pints = keg_json['pints']
+
+            if 'kegerator_ordinal' in keg_json:
+                keg.kegerator_ordinal = keg_json['kegerator_ordinal']
+
+            keg.updated_at = datetime.datetime.utcnow()
 
             session.commit()
 

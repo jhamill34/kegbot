@@ -10,7 +10,7 @@ import sys
 import glob
 import os
 
-kegerator_id = os.environ.get('KEG_ID')
+kegerator_id = os.environ.get('KEGERATOR_ID')
 
 startKeglevel = 40.0
 keglevel = 40.0

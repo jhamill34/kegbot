@@ -20,7 +20,7 @@ class KegeratorView(MethodView):
     def post(self):
         kegerator_json = request.get_json()
         try:
-            kegerator = Kegerator()
+            kegerator = Kegerator(max_kegs=kegerator_json['max_kegs'])
             session.add(kegerator)
             session.commit()
 
@@ -32,7 +32,10 @@ class KegeratorView(MethodView):
         kegerator_json = request.get_json()
         kegerator = session.query(Kegerator).filter(Kegerator.id == kegerator_id).first()
         if kegerator:
-            # session.commit()
+            if 'max_kegs' in kegerator_json:
+                kegerator.max_kegs = kegerator_json['max_kegs']
+
+            session.commit()
             return jsonify(kegerator.to_json())
         else:
             return ('Kegerator Not Found', 404)
@@ -54,6 +57,7 @@ class ShowKegeratorKegs(View):
 
         if kegerator:
             result = []
+            # TODO: Order by the ordinal values
             for instance in kegerator.kegs:
                 result.append(instance.to_json())
             return jsonify(result)
