@@ -4,18 +4,32 @@ from session import session
 from models import User
 
 class UserView(MethodView):
-    def get(self, user_id):
-        if user_id is None:
-            result = []
-            for instance in session.query(User).order_by(User.id):
-                result.append(instance.to_json())
-            return jsonify(result)
-        else:
-            user = session.query(User).filter(User.id == user_id).first()
+    def index(self):
+        if 'rfid' in request.args:
+            rfid = request.args.get('rfid')
+            user = session.query(User).filter(User.rfid == rfid).first()
             if user:
                 return jsonify(user.to_json())
             else:
                 return ('User Not Found', 404)
+        else:
+            result = []
+            for instance in session.query(User).order_by(User.id):
+                result.append(instance.to_json())
+            return jsonify(result)
+
+    def show(self, user_id):
+        user = session.query(User).filter(User.id == user_id).first()
+        if user:
+            return jsonify(user.to_json())
+        else:
+            return ('User Not Found', 404)
+
+    def get(self, user_id):
+        if user_id is None:
+            return self.index()
+        else:
+            return self.show(user_id)
 
     def post(self):
         usr_json = request.get_json()
