@@ -25,7 +25,7 @@ class AccountView(MethodView):
     def post(self):
         account_json = request.get_json()
         try:
-            hashed_pwd = bcrypt.hashpw(account_json['password'], bcrypt.gensalt())
+            hashed_pwd = bcrypt.hashpw(str(account_json['password']), bcrypt.gensalt())
             account = Account(
                 email=account_json['email'],
                 first_name=account_json['first_name'],
@@ -37,7 +37,7 @@ class AccountView(MethodView):
             session.commit()
             return (jsonify(account.to_json()), 201)
         except Exception as e:
-            return ('Missing parameters', 400)
+            return ('Missing parameters: %s' %(e), 400)
 
     # Account, Admin
     def put(self, account_id):
