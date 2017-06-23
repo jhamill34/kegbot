@@ -23,12 +23,14 @@ class KegeratorView(MethodView):
         kegerator_json = request.get_json()
         try:
             kegerator = Kegerator(max_kegs=kegerator_json['max_kegs'])
+            kegerator.generate_secret()
+
             session.add(kegerator)
             session.commit()
 
             return (jsonify(kegerator.to_json()), 201)
         except Exception as e:
-            return ('Missing Parameters', 400)
+            return ('Missing Parameters: %s' %(e), 400)
 
     # Admin
     def put(self, kegerator_id):

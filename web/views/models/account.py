@@ -8,7 +8,7 @@ class Account(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String)
     last_name = Column(String)
-    email = Column(String, ForeignKey('cards.email'), unique=True)
+    email = Column(String, unique=True)
     password = Column(String)
     admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow())

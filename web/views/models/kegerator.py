@@ -1,3 +1,4 @@
+import uuid
 import datetime
 from base import Base
 from sqlalchemy import Column, Integer, String, DateTime
@@ -10,6 +11,9 @@ class Kegerator(Base):
     secret = Column(String)
     created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime, default=datetime.datetime.utcnow())
+
+    def generate_secret (self):
+        self.secret = uuid.uuid4()
 
     def to_json(self):
         return {

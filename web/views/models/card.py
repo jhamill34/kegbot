@@ -2,7 +2,7 @@ import uuid
 import datetime
 import namesgenerator
 from base import Base
-from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 
 class Card(Base):
     __tablename__ = 'cards'
@@ -13,6 +13,7 @@ class Card(Base):
     rfid = Column(String, unique=True)
     credits = Column(Integer)
     email_token = Column(String)
+    account_id = Column(Integer, ForeignKey('accounts.id'))
     created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime, default=datetime.datetime.utcnow())
 
