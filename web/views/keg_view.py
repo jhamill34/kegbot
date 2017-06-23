@@ -48,6 +48,12 @@ class KegView(MethodView):
             if 'kegerator_ordinal' in keg_json:
                 keg.kegerator_ordinal = keg_json['kegerator_ordinal']
 
+            if 'unlocked_until' in keg_json:
+                keg.unlocked_until = keg_json['unlocked_until']
+
+            if 'locked_until' in keg_json:
+                keg.locked_until = keg_json['locked_until']
+
             keg.updated_at = datetime.datetime.utcnow()
 
             session.commit()

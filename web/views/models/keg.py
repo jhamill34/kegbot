@@ -1,7 +1,7 @@
 import datetime
 import beer, kegerator
 from base import Base
-from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
 class Keg(Base):
@@ -10,6 +10,8 @@ class Keg(Base):
     pints = Column(Numeric)
     starting_pints = Column(Numeric)
     kegerator_ordinal = Column(Integer)
+    locked_until = Column(DateTime) # Takes precidence over unlocked!
+    unlocked_until = Column(DateTime)
     beer_id = Column(Integer, ForeignKey('beer.id'))
     kegerator_id = Column(Integer, ForeignKey('kegerator.id'))
     created_at = Column(DateTime, default=datetime.datetime.utcnow())
