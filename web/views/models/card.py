@@ -3,6 +3,9 @@ import datetime
 import namesgenerator
 from base import Base
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
+
+import account
 
 class Card(Base):
     __tablename__ = 'cards'
@@ -16,6 +19,8 @@ class Card(Base):
     account_id = Column(Integer, ForeignKey('accounts.id'))
     created_at = Column(DateTime, default=datetime.datetime.utcnow())
     updated_at = Column(DateTime, default=datetime.datetime.utcnow())
+
+    account = relationship('Account', back_populates='cards')
 
     def to_json(self):
         return {
@@ -37,3 +42,5 @@ class Card(Base):
 
     def __repr__(self):
         return "<Card(name='%s', email='%s', rfid='%s', credits='%s')>" %(self.name, self.email, self.rfid, str(self.credits))
+
+account.Account.cards = relationship('Card', order_by=Card.id, back_populates='account')

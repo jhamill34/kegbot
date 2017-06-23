@@ -1,6 +1,6 @@
 import datetime
 from flask import jsonify, request
-from flask.views import MethodView
+from flask.views import MethodView, View
 from session import session
 from models import Card
 
@@ -80,5 +80,13 @@ class CardView(MethodView):
             session.commit()
 
             return jsonify(card.to_json())
+        else:
+            return ('Card Not Found', 404)
+
+class ShowCardAccount(View):
+    def dispatch_request(self, card_id):
+        card = session.query(Card).filter(Card.id == card_id).first()
+        if card:
+            return jsonify(card.account.to_json())
         else:
             return ('Card Not Found', 404)

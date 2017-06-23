@@ -1,7 +1,7 @@
 import bcrypt
 import datetime
 from flask import jsonify, request
-from flask.views import MethodView
+from flask.views import MethodView, View
 from session import session
 from models import Account, Card
 
@@ -39,6 +39,15 @@ class AccountView(MethodView):
         except Exception as e:
             return ('Missing parameters: %s' %(e), 400)
 
+    def link_card (self, account, email_token):
+        card = session.query(Card).filter(Card.email_token == email_token).first()
+        if card and account.email == card.email:
+            card.account = account
+            session.commit()
+            return True
+        else:
+            return False
+
     # Account, Admin
     def put(self, account_id):
         account_json = request.get_json()
@@ -58,6 +67,10 @@ class AccountView(MethodView):
 
             session.commit()
 
+            if 'email_token' in account_json:
+                if not self.link_card(account, account_json['email_token']):
+                    return ('Invalid Email Token', 400)
+
             return jsonify(account.to_json())
         else:
             return ('Account Not Found', 404)
@@ -71,5 +84,16 @@ class AccountView(MethodView):
             session.commit()
 
             return ('', 204)
+        else:
+            return ('Account Not Found', 404)
+
+class ShowAccountCards(View):
+    def dispatch_request(self, account_id):
+        result = []
+        account = session.query(Account).filter(Account.id == account_id).first()
+        if account:
+            for instance in account.cards:
+                result.append(instance.to_json())
+            return jsonify(result)
         else:
             return ('Account Not Found', 404)
