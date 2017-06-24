@@ -1,3 +1,4 @@
+import bcrypt
 import datetime
 from base import Base
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
@@ -23,6 +24,9 @@ class Account(Base):
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }
+
+    def verify_password(self, password):
+        return bcrypt.checkpw(password, str(self.password))
 
     def __repr__(self):
         return "<Account(email='%s', name='%s, %s')>" %(self.name, self.last_name, self.first_name)

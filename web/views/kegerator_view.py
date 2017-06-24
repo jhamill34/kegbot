@@ -2,9 +2,9 @@ from flask import jsonify, request
 from flask.views import MethodView, View
 from session import session
 from models import Kegerator
+from authenticate import requires_admin_auth
 
 class KegeratorView(MethodView):
-    # Public and Kegerator
     def get(self, kegerator_id):
         if kegerator_id is None:
             result = []
@@ -18,7 +18,7 @@ class KegeratorView(MethodView):
             else:
                 return ('Kegerator Not Found', 404)
 
-    # Admin
+    @requires_admin_auth
     def post(self):
         kegerator_json = request.get_json()
         try:
@@ -32,7 +32,7 @@ class KegeratorView(MethodView):
         except Exception as e:
             return ('Missing Parameters: %s' %(e), 400)
 
-    # Admin
+    @requires_admin_auth
     def put(self, kegerator_id):
         kegerator_json = request.get_json()
         kegerator = session.query(Kegerator).filter(Kegerator.id == kegerator_id).first()
@@ -45,7 +45,7 @@ class KegeratorView(MethodView):
         else:
             return ('Kegerator Not Found', 404)
 
-    # Admin
+    @requires_admin_auth
     def delete(self, kegerator_id):
         kegerator = session.query(Kegerator).filter(Kegerator.id == kegerator_id).first()
 
@@ -57,7 +57,6 @@ class KegeratorView(MethodView):
         else:
             return ('Kegerator Not Found', 404)
 
-# Public and Kegerator
 class ShowKegeratorKegs(View):
     def dispatch_request(self, kegerator_id):
         kegerator = session.query(Kegerator).filter(Kegerator.id == kegerator_id).first()

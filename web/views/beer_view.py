@@ -3,9 +3,9 @@ from flask import jsonify, request
 from flask.views import MethodView, View
 from session import session
 from models import Beer
+from authenticate import requires_admin_auth
 
 class BeerView(MethodView):
-    # Public
     def get(self, beer_id):
         if beer_id is None:
             result = []
@@ -20,7 +20,7 @@ class BeerView(MethodView):
             else:
                 return ('Beer Not Found', 404)
 
-    # Admin
+    @requires_admin_auth
     def post(self):
         beer_json = request.get_json()
 
@@ -33,7 +33,7 @@ class BeerView(MethodView):
         except Exception as e:
             return ('Missing Parameters', 400)
 
-    # Admin
+    @requires_admin_auth
     def put(self, beer_id):
         beer_json = request.get_json()
         beer = session.query(Beer).filter(Beer.id == beer_id).first()
@@ -53,7 +53,7 @@ class BeerView(MethodView):
         else:
             return ('Beer Not Found', 404)
 
-    # Admin
+    @requires_admin_auth
     def delete(self, beer_id):
         beer = session.query(Beer).filter(Beer.id == beer_id).first()
 
@@ -65,7 +65,6 @@ class BeerView(MethodView):
         else:
             return ('Beer Not Found', 404)
 
-# Public
 class ShowBeerKegs(View):
     def dispatch_request(self, beer_id):
         beer = session.query(Beer).filter(Beer.id == beer_id).first()

@@ -3,9 +3,10 @@ from flask import jsonify, request
 from flask.views import MethodView, View
 from session import session
 from models import Card
+from authenticate import requires_admin_auth
 
 class CardView(MethodView):
-    # Admin
+    @requires_admin_auth
     def index(self):
         if 'rfid' in request.args:
             rfid = request.args.get('rfid')
@@ -20,7 +21,7 @@ class CardView(MethodView):
                 result.append(instance.to_json())
             return jsonify(result)
 
-    # Admin
+    @requires_admin_auth
     def show(self, card_id):
         card = session.query(Card).filter(Card.id == card_id).first()
         if card:
@@ -28,14 +29,13 @@ class CardView(MethodView):
         else:
             return ('Card Not Found', 404)
 
-    # --- Inherit ---
     def get(self, card_id):
         if card_id is None:
             return self.index()
         else:
             return self.show(card_id)
 
-    # Admin
+    @requires_admin_auth
     def post(self):
         card_json = request.get_json()
         try:
@@ -48,7 +48,7 @@ class CardView(MethodView):
         except Exception as e:
             return ('Missing parameters: %s' % (str(e)), 400)
 
-    # Admin
+    @requires_admin_auth
     def delete(self, card_id):
         card = session.query(Card).filter(Card.id == card_id).first()
 
@@ -60,7 +60,7 @@ class CardView(MethodView):
         else:
             return ('Card Not Found', 404)
 
-    # Admin
+    @requires_admin_auth
     def put(self, card_id):
         card_json = request.get_json()
         card = session.query(Card).filter(Card.id == card_id).first()
@@ -84,6 +84,7 @@ class CardView(MethodView):
             return ('Card Not Found', 404)
 
 class ShowCardAccount(View):
+    @requires_admin_auth
     def dispatch_request(self, card_id):
         card = session.query(Card).filter(Card.id == card_id).first()
         if card:

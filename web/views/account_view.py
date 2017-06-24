@@ -1,25 +1,34 @@
 import bcrypt
 import datetime
-from flask import jsonify, request
+from flask import jsonify, request, g
 from flask.views import MethodView, View
 from session import session
 from models import Account, Card
+from authenticate import requires_admin_auth
 
 class AccountView(MethodView):
-    # Account, Admin
+
+    @requires_admin_auth
+    def index(self):
+        result = []
+        for instance in session.query(Account).order_by(Account.id):
+            result.append(instance.to_json())
+        return jsonify(result)
+
+    @requires_admin_auth
+    def show(self, account_id):
+        account = session.query(Account).filter(Account.id == account_id).first()
+
+        if account:
+            return jsonify(account.to_json())
+        else:
+            return ('Account Not Found', 404)
+
     def get(self, account_id):
         if account_id is None:
-            result = []
-            for instance in session.query(Account).order_by(Account.id):
-                result.append(instance.to_json())
-            return jsonify(result)
+            return self.index()
         else:
-            account = session.query(Account).filter(Account.id == account_id).first()
-
-            if account:
-                return jsonify(account.to_json())
-            else:
-                return ('Account Not Found', 404)
+            return self.show(account_id)
 
     # Public
     def post(self):
@@ -48,7 +57,7 @@ class AccountView(MethodView):
         else:
             return False
 
-    # Account, Admin
+    @requires_admin_auth
     def put(self, account_id):
         account_json = request.get_json()
         account = session.query(Account).filter(Account.id == account_id).first()
@@ -76,6 +85,7 @@ class AccountView(MethodView):
             return ('Account Not Found', 404)
 
     # Account, Admin
+    @requires_admin_auth
     def delete(self, account_id):
         account = session.query(Account).filter(Account.id == account_id).first()
 
@@ -88,6 +98,7 @@ class AccountView(MethodView):
             return ('Account Not Found', 404)
 
 class ShowAccountCards(View):
+    @requires_admin_auth
     def dispatch_request(self, account_id):
         result = []
         account = session.query(Account).filter(Account.id == account_id).first()
