@@ -16,6 +16,7 @@ app.add_url_rule('/beers/<int:beer_id>/kegs', view_func=ShowBeerKegs.as_view('sh
 app.add_url_rule('/kegerators/<int:kegerator_id>/kegs', view_func=ShowKegeratorKegs.as_view('show_kegerator_kegs'))
 app.add_url_rule('/kegs/<int:keg_id>/beer', view_func=ShowKegBeer.as_view('show_keg_beer'))
 app.add_url_rule('/kegs/<int:keg_id>/kegerator', view_func=ShowKegKegerator.as_view('show_keg_kegerator'))
+app.add_url_rule('/kegs/ordinal/<int:keg_ordinal>', view_func=UpdateKeg.as_view('update_keg'), methods=['PUT',])
 
 app.add_url_rule('/accounts/<int:account_id>/cards', view_func=ShowAccountCards.as_view('show_account_cards'))
 app.add_url_rule('/cards/<int:card_id>/account', view_func=ShowCardAccount.as_view('show_card_account'))

@@ -1,6 +1,6 @@
 from functools import wraps
 from flask import request, g
-from models import Account
+from models import Account, Kegerator
 from session import session
 
 def check_auth(email, password):
@@ -11,8 +11,8 @@ def check_auth(email, password):
     else:
         return False
 
-def check_keg(kegerator_id, secret):
-    kegerator = session.query(Kegerator).filter(Kegerator.id == kegerator_id).first()
+def check_keg(token, secret):
+    kegerator = session.query(Kegerator).filter(Kegerator.token == token).first()
     if kegerator and kegerator.verify_secret(secret):
         g.kegerator = kegerator
         return True

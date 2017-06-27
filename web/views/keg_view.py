@@ -1,9 +1,9 @@
 import datetime
-from flask import jsonify, request
+from flask import jsonify, request, g
 from flask.views import MethodView, View
 from session import session
 from models import Keg, Beer, Kegerator
-from authenticate import requires_admin_auth
+from authenticate import requires_admin_auth, requires_keg_auth
 
 class KegView(MethodView):
     def get(self, keg_id):
@@ -34,6 +34,7 @@ class KegView(MethodView):
             else:
                 return ('Beer or Kegerator not found', 400)
         except Exception as e:
+            session.rollback()
             return ('Missing Parameters', 400)
 
     @requires_admin_auth
@@ -82,6 +83,30 @@ class ShowKegBeer(View):
             return jsonify(keg.beer.to_json())
         else:
             return ('Keg Not Found', 404)
+
+class UpdateKeg(View):
+    @requires_keg_auth
+    def dispatch_request(self, keg_ordinal):
+        keg_json = request.get_json()
+
+        keg = None
+        for instance in g.kegerator.kegs:
+            if instance.kegerator_ordinal == keg_ordinal:
+                keg = instance
+                break
+
+        if keg:
+            if 'pints' in keg_json:
+                keg.pints = keg_json['pints']
+
+            keg.updated_at = datetime.datetime.utcnow()
+
+            session.commit()
+
+            return jsonify(keg.to_json())
+        else:
+            return ('Ordinal not found', 404)
+
 
 class ShowKegKegerator(View):
     def dispatch_request(self, keg_id):
