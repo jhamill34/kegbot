@@ -1,9 +1,10 @@
 import bcrypt
 import datetime
 from flask import jsonify, request, g
-from flask.views import MethodView
+from flask.views import MethodView, View
 from session import session
 from authenticate import requires_user_auth
+from models import Card
 
 class MyAccountView(MethodView):
     @requires_user_auth
@@ -51,3 +52,11 @@ class MyAccountView(MethodView):
         session.commit()
 
         return ('', 204)
+
+class ShowMyAccountCards(View):
+    @requires_user_auth
+    def dispatch_request(self):
+        result = []
+        for instance in g.account.cards:
+            result.append(instance.to_json())
+        return jsonify(result)
