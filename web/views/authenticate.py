@@ -11,6 +11,14 @@ def check_auth(email, password):
     else:
         return False
 
+def check_keg(kegerator_id, secret):
+    kegerator = session.query(Kegerator).filter(Kegerator.id == kegerator_id).first()
+    if kegerator and kegerator.verify_secret(secret):
+        g.kegerator = kegerator
+        return True
+    else:
+        return False
+
 def authenticate():
     return ('Could not verify your access level', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
@@ -36,5 +44,9 @@ def requires_admin_auth(f):
 def requires_keg_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        f(*args, **kwargs)
+        auth = request.authorization
+        if not auth or not check_keg(auth.username, auth.password):
+            return authenticate()
+
+        return f(*args, **kwargs)
     return decorated

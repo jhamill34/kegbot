@@ -23,5 +23,8 @@ class Kegerator(Base):
             'updated_at': self.updated_at
         }
 
+    def verify_secret(self, secret):
+        return self.secret == secret
+
     def __repr__(self):
         return "<Kegerator(id='%s')>" % (self.id)
